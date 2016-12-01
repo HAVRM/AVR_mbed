@@ -2,6 +2,7 @@ PROG = Hello_World
 MMCU = atmega88p
 CPUFREQ = 1000000
 
+#change when use AVRISP mkII
 PORT = usb
 TARGET = m88p
 MEMORY = flash
@@ -21,9 +22,9 @@ $(PROG) : $(PROG).o
 	$(CC) -g -O2 -mmcu=$(MMCU) $< -o $@
 
 .c.o :
-	$(CC) -g -O2 -mmcu=$(MMCU) -DF_CPU=$(CPUFREQ)UL -c -o $@ $<
+	$(CC) -I./mbed -I./mbed/target/$(MMCU) -g -O2 -mmcu=$(MMCU) -DF_CPU=$(CPUFREQ)UL -c -o $@ $<
 .cpp.o :
-	$(CXX) -g -O2 -mmcu=$(MMCU) -DF_CPU=$(CPUFREQ)UL -c -o $@ $<
+	$(CXX) -I./mbed -I./mbed/target/$(MMCU) -g -O2 -mmcu=$(MMCU) -DF_CPU=$(CPUFREQ)UL -c -o $@ $<
 
 .PHONY: wmk
 wmk :

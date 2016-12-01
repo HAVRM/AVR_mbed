@@ -1,4 +1,4 @@
-#include "mbed/mbed.h"
+#include "mbed.h"
 
 DigitalOut LED(PB_0);
 int main(void){

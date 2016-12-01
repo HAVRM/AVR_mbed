@@ -14,6 +14,7 @@
 #include <math.h>
 
 #include "PinName.h"
+
 #include "mbed_IO.h"
 
 #include "mbed_wait.h"
@@ -25,7 +26,6 @@
 #include "BusOut.h"
 
 #include "Serial.h"
-//#include "Serial_lite.h"
 
 #include "SPI.h"
 #include "SPISlave.h"
