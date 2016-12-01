@@ -16,6 +16,8 @@
 #include "PinName.h"
 #include "mbed_IO.h"
 
+#include "mbed_wait.h"
+
 #include "DigitalOut.h"
 #include "DigitalIn.h"
 #include "DigitalInOut.h"
