@@ -7,7 +7,8 @@
 /* storage control modules to the FatFs module with a defined API.       */
 /*-----------------------------------------------------------------------*/
 
-#include "diskio.h"		/* FatFs lower layer API */
+#include "FatFileSystem/diskio.h"		/* FatFs lower layer API */
+#include "mbed.h"
 
 /* Definitions of physical drive number for each drive */
 #define DEV_RAM		0	/* Example: Map Ramdisk to physical drive 0 */
