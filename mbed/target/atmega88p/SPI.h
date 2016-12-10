@@ -42,9 +42,10 @@ public:
 		SPSR=(SPSR&254)|x2;
 		return F_CPU/rate;
 	}
-	void write(uint8_t data){
+	uint8_t write(uint8_t data){
 		SPDR=data;
 		while(!(SPSR & (1<<SPIF)));
+		return SPDR;
 	}
 	
 };
