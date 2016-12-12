@@ -41,8 +41,67 @@
 #define CMD55	(55)		/* APP_CMD */
 #define CMD58	(58)		/* READ_OCR */
 
+#define R1_IDLE_STATE           (1 << 0)
+#define R1_ERASE_RESET          (1 << 1)
+#define R1_ILLEGAL_COMMAND      (1 << 2)
+#define R1_COM_CRC_ERROR        (1 << 3)
+#define R1_ERASE_SEQUENCE_ERROR (1 << 4)
+#define R1_ADDRESS_ERROR        (1 << 5)
+#define R1_PARAMETER_ERROR      (1 << 6)
+
+#define SDCARD_FAIL 0
+#define SDCARD_V1   1
+#define SDCARD_V2   2
+#define SDCARD_V2HC 3
+
 static volatile
 DSTATUS Stat[9] = {STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT};
+
+int _sd_num=0;
+SPI _sd_spi[9];
+DigitalOut _sd_cs[9];
+BYTE CardType[9];
+
+deselect()
+select()
+
+BYTE send_cmd(BYTE pdrv,BYTE cmd,DWORD arg){
+  BYTE n,res;
+
+  if(cmd & 0x80){
+    cmd &= 0x7F;
+    res = send_cmd(pdrv,CMD55,0);
+    if(res>1)return res;
+  }
+
+  if(cmd != CMD12){
+    deselect();
+    if(!select())return 0xFF;
+  }
+
+  _sd_cs[pdrv]=0;
+  _sd_spi[pdrv].write(0x40 | cmd);
+  _sd_spi[pdrv].write((uint8_t)(arg >> 24));
+  _sd_spi[pdrv].write((uint8_t)(arg >> 16));
+  _sd_spi[pdrv].write((uint8_t)(arg >> 8));
+  _sd_spi[pdrv].write((uint8_t)arg);
+  n = 0x01;
+  if(cmd == CMD0)n = 0x95;
+  if(cmd == CMD8)n = 0x87;
+  _sd_spi.write[pdrv](n);
+
+  if(cmd == CMD12)_sd_spi[pdrv].write(0xFF);
+  n=10;
+  for(int i=0;i<n;i++){
+    res = _sd_spi[pdrv].write(0xFF);
+    if(!(res & 0x80)){
+      _sd_cs[pdrv]=1;
+      return res;
+    }
+  }
+  _sd_cs[pdrv]=1;
+  return res;
+}
 
 /*-----------------------------------------------------------------------*/
 /* Get Drive Status                                                      */
@@ -65,11 +124,51 @@ DSTATUS disk_initialize (
 	BYTE pdrv				/* Physical drive nmuber to identify the drive */
 )
 {
-	DSTATUS stat;
-	int result;
+  new(_sd_cs+pdrv) DigitalOut(PB_6);
+  BYTE n, cmd, ty, ocr[4],tim;
 
+  power_off();				/* Turn off the socket power to reset the card */
+  for (int i=0;i<10;i++)wait_ms(100);		/* Wait for 100ms */
+  if (Stat & STA_NODISK) return Stat[pdrv];	/* No card in the socket? */
 
-	return STA_NOINIT;
+  power_on();				/* Turn on the socket power */
+  _sd_spi[pdrv].frequency(100000);
+  for (int i=0;i<10;i++) _sd_spi[pdrv].write(0xFF);	/* 80 dummy clocks */
+
+  ty = 0;
+  if (send_cmd(pdrv,CMD0, 0) == 1) {		/* Put the card SPI mode */
+    if (send_cmd(pdrv,CMD8, 0x1AA) == 1) {	/* Is the card SDv2? */
+      for (n = 0; n < 4; n++) ocr[n] = _sd_spi[pdrv].write(0xFF);	/* Get trailing return value of R7 resp */
+      if (ocr[2] == 0x01 && ocr[3] == 0xAA) {	/* The card can work at vdd range of 2.7-3.6V */
+        tim=100;
+        while (tim && send_cmd(pdrv,ACMD41, 1UL << 30))tim--;	/* Wait for leaving idle state (ACMD41 with HCS bit) */
+        if (tim && send_cmd(pdrv,CMD58, 0) == 0) {		/* Check CCS bit in the OCR */
+          for (n = 0; n < 4; n++) ocr[n] = _sd_spi[pdrv].write(0xFF);
+          ty = (ocr[0] & 0x40) ? CT_SD2 | CT_BLOCK : CT_SD2;	/* Check if the card is SDv2 */
+        }
+      }
+    } else {							/* SDv1 or MMCv3 */
+      if (send_cmd(pdrv,ACMD41, 0) <= 1) 	{
+        ty = CT_SD1; cmd = ACMD41;	/* SDv1 */
+      } else {
+        ty = CT_MMC; cmd = CMD1;	/* MMCv3 */
+      }
+      tim=100;
+      while (tim && send_cmd(pdrv,cmd, 0))tim--;			/* Wait for leaving idle state */
+      if (!tim || send_cmd(pdrv,CMD16, 512) != 0)ty = 0;	/* Set R/W block length to 512 */
+    }
+  }
+  CardType[pdrv] = ty;
+  deselect();
+
+  if (ty) {			/* Initialization succeded */
+    Stat[pdrv] &= ~STA_NOINIT;		/* Clear STA_NOINIT */
+    _sd_spi[pdrv].frequency(1000000);
+  } else {			/* Initialization failed */
+    power_off();
+  }
+
+  return Stat[pdrv];
 }
 
 

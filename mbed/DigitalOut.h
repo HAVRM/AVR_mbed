@@ -8,7 +8,7 @@ class DigitalOut{
 private:
 	PinName p;
 public:
-	DigitalOut(PinName pin){
+	DigitalOut(PinName pin=NC){
 		DigitalOut::p=pin;
 		DDR(pin,1);
 	}
