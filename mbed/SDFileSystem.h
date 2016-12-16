@@ -3,8 +3,13 @@
 #ifndef SDFATFILESYSTEM_H_20161202_
 #define SDFATFILESYSTEM_H_20161202_
 
-#include "FatFileSystem/FatFileSystem.h"
+#include "FATFileSystem/diskio.h"
+#include "FATFileSystem/ff.h"
+#include "FATFileSystem/ffconf.h"
+#include "FATFileSystem/integer.h"
 #include "mbed.h"
+#include <stdarg.h>
+#include <stdlib.h>
 
 //diskio.c file is under here
 
@@ -59,6 +64,11 @@
 #define CT_SD2		0x04		/* SD ver 2 */
 #define CT_SDC		(CT_SD1|CT_SD2)	/* SD */
 #define CT_BLOCK	0x08		/* Block addressing */
+
+#define CTRL_POWER_IDLE		6	/* Put the device idle state */
+#define CTRL_POWER_OFF		7	/* Put the device off state */
+#define CTRL_UNLOCK			9	/* Unlock media removal */
+
 
 static volatile DSTATUS Stat[9] = {STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT};
 
@@ -339,7 +349,7 @@ DRESULT disk_ioctl (
 )
 {
   DRESULT res;
-  BYTE n, csd[16], *ptr = buff;
+  BYTE n, csd[16], *ptr = (BYTE*)buff;
   DWORD *dp, st, ed, csize;
 #if _USE_ISDIO
   SDIO_CTRL *sdi;
@@ -398,11 +408,11 @@ DRESULT disk_ioctl (
       if (!(CardType[pdrv] & CT_SDC)) break;				/* Check if the card is SDC */
       if (disk_ioctl(pdrv,MMC_GET_CSD, csd)) break;	/* Get CSD */
       if (!(csd[0] >> 6) && !(csd[10] & 0x40)) break;	/* Check if sector erase can be applied to the card */
-      dp = buff; st = dp[0]; ed = dp[1];				/* Load sector block */
+      dp = (DWORD*)buff; st = dp[0]; ed = dp[1];				/* Load sector block */
       if (!(CardType[pdrv] & CT_BLOCK)) {
         st *= 512; ed *= 512;
       }
-      if (send_cmd(prv,CMD32, st) == 0 && send_cmd(pdrv,CMD33, ed) == 0 && send_cmd(pdrv,CMD38, 0) == 0 && wait_ready(pdrv,30000))	/* Erase sector block */
+      if (send_cmd(pdrv,CMD32, st) == 0 && send_cmd(pdrv,CMD33, ed) == 0 && send_cmd(pdrv,CMD38, 0) == 0 && wait_ready(pdrv,30000))	/* Erase sector block */
       res = RES_OK;	/* FatFs does not check result of this command */
       break;
 
@@ -489,4 +499,7 @@ DRESULT disk_ioctl (
 
   return res;
 }
+
+#include "FATFileSystem/FATFileSystem.h"
+
 #endif

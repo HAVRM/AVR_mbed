@@ -25,7 +25,7 @@
 /   3: f_lseek() function is removed in addition to 2. */
 
 
-#define	_USE_STRFUNC	0
+#define	_USE_STRFUNC	1
 /* This option switches string functions, f_gets(), f_putc(), f_puts() and
 /  f_printf().
 /
@@ -215,7 +215,7 @@
 /  Note that enabling exFAT discards C89 compatibility. */
 
 
-#define _FS_NORTC	0
+#define _FS_NORTC	1
 #define _NORTC_MON	1
 #define _NORTC_MDAY	1
 #define _NORTC_YEAR	2016

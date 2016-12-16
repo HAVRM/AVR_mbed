@@ -10,28 +10,34 @@ int main(void){
 
 Serial pc;
 
-FATFS FatFs;   /* 論理ドライブのワーク エリア(ファイル システム オブジェクト) */
+//FATFS ff;   /* 論理ドライブのワーク エリア(ファイル システム オブジェクト) */
+//FATFileSystem ss("sd");
 
 int main (void)
 {
-    FIL fil;       /* ファイル オブジェクト */
-    char line[82]; /* 行バッファ */
-    FRESULT fr;    /* 戻り値 */
+  char *s;
+  FILE *fp=fopen("/sd/test.txt","a");
+  fputc('a',fp);
+  fputs("asdffffff",fp);
+  fgets(s,25,fp);
+//    FIL fil;       /* ファイル オブジェクト */
+//    char line[82]; /* 行バッファ */
+//    FRESULT fr;    /* 戻り値 */
 
 
     /* デフォルト ドライブにワークエリアを与える */
-    f_mount(&FatFs, "", 0);
+//    f_mount(&ff, "", 0);
 
     /* テキスト ファイルを開く */
-    fr = f_open(&fil, "message.txt", FA_READ);
-    if (fr) return (int)fr;
+//    fr = f_open(&fil, "message.txt", FA_READ);
+//    if (fr) return (int)fr;
 
     /* 1行ずつ読み出して表示 */
-    while (f_gets(line, sizeof line, &fil))
-        pc.printf("%s",line);
+//    while (f_gets(line, sizeof line, &fil))
+//        pc.printf("%s",line);
 
     /* ファイルを閉じる */
-    f_close(&fil);
+//    f_close(&fil);
 
     return 0;
 }
