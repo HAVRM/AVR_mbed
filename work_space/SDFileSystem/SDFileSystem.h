@@ -54,42 +54,16 @@
 #define SDCARD_V2   2
 #define SDCARD_V2HC 3
 
-#define CT_MMC		0x01		/* MMC ver 3 */
-#define CT_SD1		0x02		/* SD ver 1 */
-#define CT_SD2		0x04		/* SD ver 2 */
-#define CT_SDC		(CT_SD1|CT_SD2)	/* SD */
-#define CT_BLOCK	0x08		/* Block addressing */
-
-static volatile DSTATUS Stat[9] = {STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT};
+static volatile
+DSTATUS Stat[9] = {STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT,STA_NOINIT};
 
 int _sd_num=0;
 SPI _sd_spi[9];
-DigitalOut _sd_cs(PB_6);
+DigitalOut _sd_cs[9];
 BYTE CardType[9];
 
-static void power_on(void){;}
-static void power_off(void){;}
-static void deselect(BYTE pdrv);
-static int select(BYTE pdrv);
-static int wait_ready (BYTE pdrv,UINT wt);
-static void rcvr_spi_multi(BYTE pdrv,BYTE *p,UINT cnt);
-static int rcvr_datablock(BYTE pdrv,BYTE *buff,UINT btr);
-static void xmit_spi_multi (BYTE pdrv,const BYTE *p,UINT cnt);
-static int xmit_datablock (BYTE pdrv,const BYTE *buff,BYTE token);
-BYTE send_cmd(BYTE pdrv,BYTE cmd,DWORD arg);
-
-static void deselect(BYTE pdrv){
-  _sd_cs=1;
-  _sd_spi[pdrv].write(0xFF);
-}
-
-static int select(BYTE pdrv){
-  _sd_cs=0;
-  _sd_spi[pdrv].write(0xFF);
-  if(wait_ready(pdrv,500))return 1;
-  deselect(pdrv);
-  return 0;
-}
+deselect()
+select()
 
 static
 int wait_ready (BYTE pdrv,UINT wt){ //wt [ms]
@@ -161,11 +135,11 @@ BYTE send_cmd(BYTE pdrv,BYTE cmd,DWORD arg){
   }
 
   if(cmd != CMD12){
-    deselect(pdrv);
-    if(!select(pdrv))return 0xFF;
+    deselect();
+    if(!select())return 0xFF;
   }
 
-  _sd_cs=0;
+  _sd_cs[pdrv]=0;
   _sd_spi[pdrv].write(0x40 | cmd);
   _sd_spi[pdrv].write((uint8_t)(arg >> 24));
   _sd_spi[pdrv].write((uint8_t)(arg >> 16));
@@ -174,18 +148,18 @@ BYTE send_cmd(BYTE pdrv,BYTE cmd,DWORD arg){
   n = 0x01;
   if(cmd == CMD0)n = 0x95;
   if(cmd == CMD8)n = 0x87;
-  _sd_spi[pdrv].write(n);
+  _sd_spi.write[pdrv](n);
 
   if(cmd == CMD12)_sd_spi[pdrv].write(0xFF);
   n=10;
   for(int i=0;i<n;i++){
     res = _sd_spi[pdrv].write(0xFF);
     if(!(res & 0x80)){
-      _sd_cs=1;
+      _sd_cs[pdrv]=1;
       return res;
     }
   }
-  _sd_cs=1;
+  _sd_cs[pdrv]=1;
   return res;
 }
 
@@ -210,12 +184,12 @@ DSTATUS disk_initialize (
 	BYTE pdrv				/* Physical drive nmuber to identify the drive */
 )
 {
-  //new(_sd_cs+pdrv) DigitalOut(PB_6);
+  new(_sd_cs+pdrv) DigitalOut(PB_6);
   BYTE n, cmd, ty, ocr[4],tim;
 
   power_off();				/* Turn off the socket power to reset the card */
   for (int i=0;i<10;i++)wait_ms(100);		/* Wait for 100ms */
-  if (Stat[pdrv] & STA_NODISK) return Stat[pdrv];	/* No card in the socket? */
+  if (Stat & STA_NODISK) return Stat[pdrv];	/* No card in the socket? */
 
   power_on();				/* Turn on the socket power */
   _sd_spi[pdrv].frequency(100000);
@@ -245,7 +219,7 @@ DSTATUS disk_initialize (
     }
   }
   CardType[pdrv] = ty;
-  deselect(pdrv);
+  deselect();
 
   if (ty) {			/* Initialization succeded */
     Stat[pdrv] &= ~STA_NOINIT;		/* Clear STA_NOINIT */
@@ -283,7 +257,7 @@ DRESULT disk_read (
     } while (--count);
     if (cmd == CMD18) send_cmd(pdrv,CMD12, 0);	/* STOP_TRANSMISSION */
   }
-  deselect(pdrv);
+  deselect();
 
   return count ? RES_ERROR : RES_OK;
 }
@@ -318,11 +292,11 @@ DRESULT disk_write (
         if (!xmit_datablock(pdrv,buff, 0xFC)) break;
         buff += 512;
       } while (--count);
-      if (!xmit_datablock(pdrv,0, 0xFD))	/* STOP_TRAN token */
+      if (!xmit_datablock(0, 0xFD))	/* STOP_TRAN token */
         count = 1;
     }
   }
-  deselect(pdrv);
+  deselect();
   return count ? RES_ERROR : RES_OK;
 }
 
@@ -352,8 +326,8 @@ DRESULT disk_ioctl (
   res = RES_ERROR;
   switch (cmd) {
     case CTRL_SYNC :		/* Make sure that no pending write process. Do not remove this or written sector might not left updated. */
-      if (select(pdrv)) res = RES_OK;
-      deselect(pdrv);
+      if (select()) res = RES_OK;
+      deselect();
       break;
 
     case GET_SECTOR_COUNT :	/* Get number of sectors on the disk (DWORD) */
@@ -368,7 +342,7 @@ DRESULT disk_ioctl (
         }
         res = RES_OK;
       }
-      deselect(pdrv);
+      deselect();
       break;
 
     case GET_BLOCK_SIZE :	/* Get erase block size in unit of sector (DWORD) */
@@ -391,7 +365,7 @@ DRESULT disk_ioctl (
           res = RES_OK;
         }
       }
-      deselect(pdrv);
+      deselect();
       break;
 
     case CTRL_TRIM:		/* Erase a block of sectors (used when _USE_TRIM in ffconf.h is 1) */
@@ -416,13 +390,13 @@ DRESULT disk_ioctl (
       case MMC_GET_CSD :		/* Receive CSD as a data block (16 bytes) */
         if (send_cmd(pdrv,CMD9, 0) == 0 && rcvr_datablock(pdrv,ptr, 16))		/* READ_CSD */
           res = RES_OK;
-        deselect(pdrv);
+        deselect();
 	break;
 
       case MMC_GET_CID :		/* Receive CID as a data block (16 bytes) */
         if (send_cmd(pdrv,CMD10, 0) == 0 && rcvr_datablock(pdrv,ptr, 16))		/* READ_CID */
           res = RES_OK;
-        deselect(pdrv);
+        deselect();
         break;
 
       case MMC_GET_OCR :		/* Receive OCR as an R3 resp (4 bytes) */
@@ -430,7 +404,7 @@ DRESULT disk_ioctl (
           for (n = 4; n; n--) *ptr++ = _sd_spi[pdrv].write(0xFF);
           res = RES_OK;
         }
-        deselect(pdrv);
+        deselect();
         break;
 
       case MMC_GET_SDSTAT :	/* Receive SD statsu as a data block (64 bytes) */
@@ -438,7 +412,7 @@ DRESULT disk_ioctl (
           _sd_spi[pdrv].write(0xFF);
           if (rcvr_datablock(pdrv,ptr, 64)) res = RES_OK;
         }
-        deselect(pdrv);
+        deselect();
         break;
 
       case CTRL_POWER_OFF :	/* Power off */
@@ -458,7 +432,7 @@ DRESULT disk_ioctl (
           res = RES_OK;
         }
       }
-      deselect(pdrv);
+      deselect();
       break;
 
     case ISDIO_WRITE:
@@ -469,7 +443,7 @@ DRESULT disk_ioctl (
         for (dc = 514 - sdi->ndata; dc; dc--) _sd_spi[pdrv].write(0xFF);
         if ((_sd_spi[pdrv].write(0xFF) & 0x1F) == 0x05) res = RES_OK;
       }
-      deselect(pdrv);
+      deselect();
       break;
 
     case ISDIO_MRITE:
@@ -479,7 +453,7 @@ DRESULT disk_ioctl (
         for (dc = 513; dc; dc--) _sd_spi[pdrv].write(0xFF);
         if ((_sd_spi[pdrv].write(0xFF) & 0x1F) == 0x05) res = RES_OK;
       }
-      deselect(pdrv);
+      deselect();
       break;
 #endif
 

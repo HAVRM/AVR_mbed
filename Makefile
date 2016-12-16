@@ -1,10 +1,10 @@
 PROG = Hello_World
-MMCU = atmega88p
+MMCU = atmega328p
 CPUFREQ = 1000000
 
 #change when use AVRISP mkII
 PORT = usb
-TARGET = m88p
+TARGET = m328p
 MEMORY = flash
 TYPE = w
 

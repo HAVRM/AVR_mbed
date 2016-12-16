@@ -4,6 +4,7 @@
 #ifndef DIGITALOUT_H_20150401_
 #define DIGITALOUT_H_20150401_
 
+
 class DigitalOut{
 private:
 	PinName p;
