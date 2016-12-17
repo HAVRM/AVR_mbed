@@ -8,18 +8,26 @@ int main(void){
   LED=1;
 }*/
 
-Serial pc;
+//Serial pc;
+DigitalOut led(PB_0);
 
 //FATFS ff;   /* 論理ドライブのワーク エリア(ファイル システム オブジェクト) */
 //FATFileSystem ss("sd");
 
 int main (void)
 {
-  char *s;
-  FILE *fp=fopen("/sd/test.txt","a");
-  fputc('a',fp);
-  fputs("asdffffff",fp);
-  fgets(s,25,fp);
+  for(int i=0;i<5;i++){
+    led=1;
+    wait_ms(500);
+    led=0;
+    wait_ms(500);
+  }
+  led=1;
+  //char *s;
+  //FILE *fp=fopen("/sd/test.txt","a");
+  //fputc('a',fp);
+  //fputs("asdffffff",fp);
+  //fgets(s,25,fp);
 //    FIL fil;       /* ファイル オブジェクト */
 //    char line[82]; /* 行バッファ */
 //    FRESULT fr;    /* 戻り値 */
@@ -38,6 +46,7 @@ int main (void)
 
     /* ファイルを閉じる */
 //    f_close(&fil);
-
-    return 0;
+  //fclose(fp);
+  led=0;
+  return 0;
 }

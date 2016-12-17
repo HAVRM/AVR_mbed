@@ -39,6 +39,8 @@ FILE* fopen(const char* name, const char* flags){
   return &_fattemp[num];
 }
 
+int fclose(FILE *fp){return f_close(&fp->_fil);}
+
 int fputc(char data,FILE *fp){return f_putc(data,&fp->_fil);}
 int fputs(const char* data,FILE *fp){return f_puts(data,&fp->_fil);}
 
