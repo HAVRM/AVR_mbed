@@ -1,5 +1,5 @@
 #include "mbed.h"
-#include "SDFileSystem.h"
+//#include "SDFileSystem.h"
 
 /*DigitalOut LED(PB_0);
 int main(void){
@@ -9,11 +9,11 @@ int main(void){
 }*/
 
 //Serial pc;
-DigitalOut led(PB_0);
+//DigitalOut led(PB_0);
 
 //FATFS ff;   /* 論理ドライブのワーク エリア(ファイル システム オブジェクト) */
 //FATFileSystem ss("sd");
-
+/*
 int main (void)
 {
   for(int i=0;i<5;i++){
@@ -47,6 +47,21 @@ int main (void)
     /* ファイルを閉じる */
 //    f_close(&fil);
   //fclose(fp);
-  led=0;
+/*  led=0;
   return 0;
+}
+*/
+
+//BusOut tes1(PC_0,PC_1,PC_2,PC_3,PC_4);
+DigitalOut tes1(PC_4);
+DigitalOut tes2(PD_2);//,PD_3,PD_4,PD_6,PD_7,PB_7);
+DigitalIn sw(PB_1);
+DigitalOut din(PB_6);
+
+int main(void){
+  din=0;
+  tes2=0;
+  while(1){
+    tes1=sw;
+  }
 }
