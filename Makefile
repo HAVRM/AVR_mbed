@@ -22,9 +22,9 @@ $(PROG) : $(PROG).o
 	$(CC) -g -O2 -mmcu=$(MMCU) $< -o $@
 
 .c.o :
-	$(CC) -I./mbed -I./mbed/target/$(MMCU) -g -O2 -mmcu=$(MMCU) -DF_CPU=$(CPUFREQ)UL -c -o $@ $<
+	$(CC) -I./include -I./mbed -I./mbed/target/$(MMCU) -g -O2 -mmcu=$(MMCU) -DF_CPU=$(CPUFREQ)UL -c -o $@ $<
 .cpp.o :
-	$(CXX) -I./mbed -I./mbed/target/$(MMCU) -g -O2 -mmcu=$(MMCU) -DF_CPU=$(CPUFREQ)UL -c -o $@ $<
+	$(CXX) -I./include -I./mbed -I./mbed/target/$(MMCU) -g -O2 -mmcu=$(MMCU) -DF_CPU=$(CPUFREQ)UL -c -o $@ $<
 
 .PHONY: wmk
 wmk :

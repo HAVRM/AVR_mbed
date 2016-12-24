@@ -1,4 +1,5 @@
 #include "mbed.h"
+#include "gps-sd.h"
 //#include "SDFileSystem.h"
 
 /*DigitalOut LED(PB_0);
@@ -52,16 +53,34 @@ int main (void)
 }
 */
 
-//BusOut tes1(PC_0,PC_1,PC_2,PC_3,PC_4);
-DigitalOut tes1(PC_4);
-DigitalOut tes2(PD_2);//,PD_3,PD_4,PD_6,PD_7,PB_7);
+BusOut col(PC_0,PC_1,PC_2,PC_3,PC_4);
+//DigitalOut tes1(PC_4);
+//Digital
+BusOut row(PD_2,PD_3,PD_4,PD_5,PD_6,PD_7,PB_7);
 DigitalIn sw(PB_1);
-DigitalOut din(PB_6);
+DigitalOut dip(PB_6);
 
 int main(void){
-  din=0;
-  tes2=0;
+  int i=0;
+  int k=0;
   while(1){
-    tes1=sw;
+    for(int o=0;o<7;o++){
+      for(int n=0;n<45;n++){
+        dip=(o+n/5)%2;
+        for(int m=0;m<100;m++){
+          k%=7;
+          i=0;
+          //for(int l=0;l<5;l++)i=i|(JMP(k+o*7,l+n)<<(4-l));
+          for(int l=0;l<5;l++)i=i|(JMP(k,l)<<(4-l));
+          col=0;
+          row=~(1<<(6-k));
+          col=i;
+          //col=place_col_5bit(139.580,35.584,k);
+          wait_ms(1);
+          k++;
+        }
+      }
+    }
   }
+  return 0;
 }

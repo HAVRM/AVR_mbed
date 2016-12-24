@@ -23,7 +23,7 @@ public:
 		int num;
 		for(int i=0;i<16;i++){
 			temp=BusOut::pin[i];
-			if(temp!=NC)DDR(temp,0);
+			if(temp!=NC)DDR(temp,1);
 			else break;
 			num=i+1;;
 		}
@@ -44,7 +44,7 @@ public:
 		int num;
 		for(int j=0;j<16;j++){
 			temp=BusOut::pin[j];
-			if(temp!=NC)DDR(temp,0);
+			if(temp!=NC)DDR(temp,1);
 			else break;
 			num=j;
 		}
