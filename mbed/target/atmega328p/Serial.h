@@ -52,7 +52,7 @@ class Serial{
 		Serial::stop_bits=nst;
 		UCSR0A=UCSR0A|(1<<1);
 		UCSR0B=UCSR0B|(1<<RXEN0)|(1<<TXEN0);
-		UCSR0C=UCSR0C|(npr<<UPM00)|(nst<<USBS0)|((8-5)<<UCSZ00);
+		UCSR0C=UCSR0C|(npr<<UPM00)|((nst-1)<<USBS0)|((8-5)<<UCSZ00);
 	}
 	
 	int getc(){
