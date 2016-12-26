@@ -1,5 +1,4 @@
 #include "mbed.h"
-#include "gps-sd.h"
 
 BusOut col(PC_0,PC_1,PC_2,PC_3,PC_4);
 BusOut row(PD_2,PD_3,PD_4,PD_5,PD_6,PD_7,PB_7);
@@ -7,35 +6,50 @@ BusIn sw(PB_0,PB_1);
 DigitalIn dip(PB_6);
 DigitalOut sdcs(PB_2);
 
+#include "gps-sd.h"
+
 int main(void){
-  int time=0,date=161226,sats=0;
-  float east=0,north=0,speed=0;
+  long time=0,date=161226;
+  int sats=0;
+  float east=135,north=35,speed=0,dire=0;
   int i=0;
   int k=0;
+  long l=0;
   int fd;
   char buf[16] = "0123456789\r\n";
+  int re;
 
+  if(sw&1)return 0;
   col=0;
   row=~1;
   col=1;
   sdcs=1;
-  if((fd=open_sd(date,time))<0)while(1)row=row|(~2);
-  col=2;
-  while(1){
-    col=3;
-    get_gps(&time,&date,&sats,&east,&north,&speed);
-    col=4;
-    if(write_sd(fd,time,date,sats,east,north,speed)<0)while(1)row=row|(~2);
-    col=5;
+  for(int j=0;j<10;j++){
+    if((fd=open_sd(date,time,j))<0)while(1)row=fd;
+    col=2;
+    l=0;
+    while(l<7140000){
+      col=3;
+      //if(get_gps(&time,&date,&sats,&east,&north,&speed,&dire)==0){
+        col=4;
+        if((re=write_sd(fd,time,date,sats,east,north,speed,dire))<0)while(1)row=re;
+        l++;
+      //} 
+      col=5;
+      if(sw&1)break;
+      if(sw==0b10)show_map(east,north);
+      col=3;
+      row=~1;
+    }
+    col=6;
+    if((re=close_sd(fd))<0)while(1)row=re;
     if(sw&1)break;
-    if(sw==0b10)show_map(east,north);
   }
-  col=6;
-  if(close_sd(fd)<0)while(1)row=row|(~2);
   sdcs=0;
   col=0;
   row=~0;
-
+  return 0;
+}
 
 /*  for(i = 0; i < 10; i++) {
     if (sd_write(fd, buf, 10) <= 0) {
@@ -77,5 +91,3 @@ int main(void){
       }
     }
   }*/
-  return 0;
-}

@@ -62,12 +62,12 @@ public:
 		}
 	}
 	int read(){
-		int i;
+		int i=0;
 		PinName temp;
 		int num;
 		num=BusOut::n;
 		for(int j=0;j<num;j++){
-			temp=BusOut::pin[i];
+			temp=BusOut::pin[j];
 			i=(i<<1)|PORT_READ(temp);
 		}
 		return i;

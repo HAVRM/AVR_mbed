@@ -30,12 +30,12 @@ public:
 		BusIn::n=num;
 	}
 	int read(){
-		int i;
+		int i=0;
 		PinName temp;
 		int num;
 		num=BusIn::n;
 		for(int j=0;j<num;j++){
-			temp=BusIn::pin[i];
+			temp=BusIn::pin[j];
 			i=(i<<1)|PIN_READ(temp);
 		}
 		return i;
