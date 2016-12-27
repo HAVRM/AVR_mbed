@@ -50,12 +50,12 @@ class Serial{
 		Serial::bits=nbit;
 		Serial::parity=npr;
 		Serial::stop_bits=nst;
-		UCSR0A=UCSR0A|(1<<1);
-		UCSR0B=UCSR0B|(1<<RXEN0)|(1<<TXEN0);
-		UCSR0C=UCSR0C|(npr<<UPM00)|((nst-1)<<USBS0)|((8-5)<<UCSZ00);
+		UCSR0A=1<<U2X0;
+		UCSR0B=(1<<RXEN0)|(1<<TXEN0);
+		UCSR0C=(npr<<UPM00)|((nst-1)<<USBS0)|(3<<UCSZ00);
 	}
 	
-	int getc(){
+	unsigned char getc(){
 		while(!UCSR0A&(1<<RXC0));
 		return UDR0;
 	}
