@@ -44,8 +44,7 @@ char uint_2_char60_2(int data){
   data%=36;
   if(data<0)return '@';
   if(data<10)return '0'+data;
-  else if(data<36)return 'a'+data-10;
-  else return '_';
+  else return 'a'+data-10;
 }
 
 char get_char_from_nmea(char *data,int num){
