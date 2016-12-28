@@ -41,10 +41,10 @@ char uint_2_char60(int data){
 }
 
 char uint_2_char60_2(int data){
-  data%=31;
+  data%=36;
   if(data<0)return '@';
   if(data<10)return '0'+data;
-  else if(data<30)return 'a'+data-10;
+  else if(data<36)return 'a'+data-10;
   else return '_';
 }
 
