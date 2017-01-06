@@ -1,2 +1,3 @@
 # AVR_mbed
-program AVR wriiten by same grammer as mbed.org
+header to use FAT filesystem (FAT32)
+this header is too big
