@@ -12,7 +12,7 @@ Serial gps;
 int main(void){
   int time[3]={0},date[3]={16,12,26};
   int sats=0;
-  float east=135,north=35,high=0,speed=0,dire=0;
+  float east=135,north=35,speed=0,dire=0;
   int i=0;
   int k=0;
   long l=0;
@@ -37,11 +37,11 @@ int main(void){
     while(l<7140000){
       dip=!dip;
       col=0;
-      if(get_gps(time,date,&sats,&east,&north,&high,&speed,&dire,fd)==0){
+      if(get_gps(time,date,&sats,&east,&north,&speed,&dire,fd)==0){
         //get_gps(&time,&date,&sats,&east,&north,&speed,&dire,fd);
         if(sw==0b10)col=5;
         else col=0;
-        if((re=write_sd(fd,time,date,sats,east,north,high,speed,dire))<0)while(1)row=re;
+        if((re=write_sd(fd,time,date,sats,east,north,speed,dire))<0)while(1)row=re;
         l++;
       } 
       else col=0;
