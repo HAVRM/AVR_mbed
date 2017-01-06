@@ -25,7 +25,11 @@
 #include "BusIn.h"
 #include "BusOut.h"
 
+#ifdef USE_SERIAL_PRINTF_FULL
 #include "Serial.h"
+#else
+#include "Serial_lite.h"
+#endif
 
 #include "SPI.h"
 #include "SPISlave.h"
