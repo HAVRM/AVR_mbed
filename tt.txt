@@ -1,0 +1,5 @@
+gps_AE-GYSFDMAXB[m
+[32mgps_sd_unit[m
+master[m
+sd_FAT[m
+sd_fat16[m
