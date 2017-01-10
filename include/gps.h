@@ -104,7 +104,7 @@ void get_now(int date[3],int time[3]){
   date[0]=date[0]%100;
 } 
 
-int get_gps(int time[3],int date[3],int *sats,float *east,float *north,float *speed,float *high,float *dire){ //get->return 0
+int get_gps(int time[3],int date[3],int *sats,float *east,float *north,float *high,float *speed,float *dire){ //get->return 0
   int i,temp;
   char c;
   char gga[100], vtg[100], zda[100], gll;
