@@ -47,12 +47,14 @@ if [ $# = 2 ]
 then
 	if [ $1 = "change" ]
 	then
+		make clean
 		git add -A
 		git commit -m $DATE
 		git push AVR_mbed $BCH
 		git checkout $2
 	elif [ $1 = "all_checkout" ]
 	then
+		make clean
 		git add -A
 		git commit -m $DATE
 		git push AVR_mbed $BCH
@@ -71,6 +73,7 @@ then
 			then
 				git checkout $arg
 				git checkout $BCH $2
+				make clean
 				git add -A
 				git commit -m $DATE
 				git push AVR_mbed $arg
@@ -82,6 +85,7 @@ elif [ $# = 1 ]
 then
 	if [ $1 = "all_push" ]
 	then
+		make clean
 		git add -A
 		git commit -m $DATE
 		DATA=(`git branch --list`)
@@ -98,6 +102,7 @@ then
 			if [ $arg != $arg2 ]
 			then
 				git checkout $arg
+				make clean
 				git add -A
 				git commit -m $DATE
 				git push AVR_mbed $arg
