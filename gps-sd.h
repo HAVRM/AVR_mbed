@@ -35,7 +35,7 @@ int open_sd(int date[3],int time[3],int j){ //date:yy,mm,dd time:hh,mm,ss number
   char fname[]="dhmm0.txt";
   char buf[13];
   buf[12]='\n';
-  fname[0]=uint_2_char60(date[2]-1);
+  fname[0]=uint_2_char60(date[2]);
   fname[1]=uint_2_char60(time[0]);
   fname[2]=uint_2_char60(time[1]/30);
   fname[3]=uint_2_char60(time[1]%30);
@@ -83,6 +83,7 @@ int write_sd(int fd,int gll,int time[3],int date[3],int sats,float east,float no
   for(int i=0;i<4;i++){
     buf[i+16]=uint_2_char60(tlh6%60);
     tlh6/=60;
+  }
   for(int i=0;i<3;i++){
     buf[i+20]=uint_2_char60(tls6%60);
     tls6/=60;
@@ -91,7 +92,6 @@ int write_sd(int fd,int gll,int time[3],int date[3],int sats,float east,float no
     buf[i+23]=uint_2_char60(tld5%60);
     tld5/=60;
   }
-  
   buf[26]='\r';
   buf[27]='\n';
   return sd_write(fd, buf, 28);

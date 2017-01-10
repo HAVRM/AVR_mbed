@@ -36,7 +36,7 @@ int main(void){
     while(l<1800){
       dip=!dip;
       col=0;
-      gll=get_gps(time,date,&sats,&east,&north,&high,&speed,&dire,fd)
+      gll=get_gps(time,date,&sats,&east,&north,&high,&speed,&dire);
       if(sw==0b10)col=5;
       else col=0;
       if((re=write_sd(fd,gll,time,date,sats,east,north,high,speed,dire))<0)while(1)row=re;
