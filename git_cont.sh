@@ -8,6 +8,7 @@ then
 		echo "AVR_mbedのgithub調整用"
 		echo ". git_cont.sh (オプション)"
 		echo "               now //現在のbranchを表示する"
+		echo "               branch //git branch --list --color"
 		echo "               change (branch名)  //branchに移動する"
 		echo "               all_push  //すべてをcommit・pushする"
 		echo "               all_merge  //すべてをfetch・mergeする"
@@ -133,7 +134,29 @@ then
 		git checkout $BCH
 	elif [ $1 = "now" ]
 	then
+		echo ""
 		echo $BCH
+		echo ""
+	elif [ $1 = "branch" ]
+	then
+		echo ""
+		DATA=(`git branch --list --color`)
+		FIL=(`ls`)
+		for arg in ${DATA[@]}
+		do
+			for arg2 in ${FIL[@]}
+			do
+				if [ $arg = $arg2 ]
+				then
+					break
+				fi
+			done
+			if [ $arg != $arg2 ]
+			then
+				echo $arg
+			fi
+		done
+		echo ""
 	fi
 fi
 cd $PLACEgit_cont
