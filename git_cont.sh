@@ -20,8 +20,11 @@ if [ $# = 2 ]
 then
 	if [ $1 = "change" ]
 	then
-		DATA=(`git branch --list --color`)
+		DATA=(`git branch --list`)
+		DATA2=(`git branch --list --color`)
 		FIL=(`ls`)
+		declare -i I
+		I=0
 		for arg in ${DATA[@]}
 		do
 			for arg2 in ${FIL[@]}
@@ -33,10 +36,14 @@ then
 			done
 			if [ $arg != $arg2 ]
 			then
-				if [ $arg ] #arg's color is green
+				arg2="_"${arg}"[m"
+				arg3="_"${DATA2[$I]}
+				if [ $arg2 != $arg3 ]
+				then
 					break
 				fi
 			fi
+			I=`expr $I + 1`
 		done
 		git add -A
 		git commit -m $DATE
@@ -90,22 +97,4 @@ then
 		done
 	fi
 fi
-
-#DATA=(`git branch --list --color`)
-#FIL=(`ls`)
-#for arg in ${DATA[@]}
-#do
-#	for arg2 in ${FIL[@]}
-#	do
-#		if [ $arg = $arg2 ]
-#		then
-#			break
-#		fi
-#	done
-#	if [ $arg != $arg2 ]
-#	then
-		echo $arg
-#	fi
-#done
-		
 cd $PLACEgit_cont
