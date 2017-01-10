@@ -8,11 +8,6 @@
 #include "serial.h"
 #include "mbed.h"
 
-union int_and_float{
-  int ival;
-  float fval;
-};
-
 int place_col_5bit(double east,double north,int row){
   double diffe=(east-122.933)/0.527;
   double diffn=(45.538-north)/0.439;
@@ -35,22 +30,15 @@ char uint_2_char60(int data){
   else return 'A'+data-36;
 }
 
-char uint_2_char60_2(int data){
-  data%=36;
-  if(data<0)return '@';
-  if(data<10)return '0'+data;
-  else return 'a'+data-10;
-}
-
 int open_sd(int date[3],int time[3],int j){ //date:yy,mm,dd time:hh,mm,ss number
   int fd;
   char fname[]="dhmm0.txt";
   char buf[13];
   buf[12]='\n';
-  fname[0]=uint_2_char60_2(date[2]-1);
-  fname[1]=uint_2_char60_2(time[0]);
-  fname[2]=uint_2_char60_2(time[1]/30);
-  fname[3]=uint_2_char60_2(time[1]%30);
+  fname[0]=uint_2_char60(date[2]-1);
+  fname[1]=uint_2_char60(time[0]);
+  fname[2]=uint_2_char60(time[1]/30);
+  fname[3]=uint_2_char60(time[1]%30);
   fname[4]=uint_2_char60(j);
   if(sd_mount(0) < 0)return -1;
   SD_SET_DATE((2000+date[0]),date[1],date[2]);
@@ -71,39 +59,42 @@ int open_sd(int date[3],int time[3],int j){ //date:yy,mm,dd time:hh,mm,ss number
 }
 
 int write_sd(int fd,int gll,int time[3],int date[3],int sats,float east,float north,float high,float speed,float dire){
-  //23byte
-  char buf[27];
+  //28byte
+  char buf[28];
   int temp=0;
-  buf[0]=uint_2_char60(date[2]);
-  for(int i=0;i<3;i++)buf[i+1]=uint_2_char60(time[i]);
-  buf[4]=uint_2_char60(sats);
+  if(gll==-1)buf[0]='N';
+  else buf[0]='A';
+  buf[1]=uint_2_char60(date[2]);
+  for(int i=0;i<3;i++)buf[i+2]=uint_2_char60(time[i]);
+  buf[5]=uint_2_char60(sats);
   long tle8=(long)((east-120)*1000000);//:0-30000000
   long tln8=(long)((north-20)*1000000);//:0-30000000
   long tlh6=(long)(high*100);//0-400000
   long tls6=(long)(speed*100);//:0-100000
   long tld5=(long)(dire*100);//:0-36000
   for(int i=0;i<5;i++){
-    buf[i+5]=uint_2_char60(tle8%60);
+    buf[i+6]=uint_2_char60(tle8%60);
     tle8/=60;
   }
   for(int i=0;i<5;i++){
-    buf[i+10]=uint_2_char60(tln8%60);
+    buf[i+11]=uint_2_char60(tln8%60);
     tln8/=60;
   }
   for(int i=0;i<4;i++){
-    buf[i+15]
+    buf[i+16]=uint_2_char60(tlh6%60);
+    tlh6/=60;
   for(int i=0;i<3;i++){
-    buf[i+15]=uint_2_char60(tls6%60);
+    buf[i+20]=uint_2_char60(tls6%60);
     tls6/=60;
   }
   for(int i=0;i<3;i++){
-    buf[i+18]=uint_2_char60(tld5%60);
+    buf[i+23]=uint_2_char60(tld5%60);
     tld5/=60;
   }
   
-  buf[21]='\r';
-  buf[22]='\n';
-  return sd_write(fd, buf, 23);
+  buf[26]='\r';
+  buf[27]='\n';
+  return sd_write(fd, buf, 28);
 }
 
 void show_map(float east,float north){
