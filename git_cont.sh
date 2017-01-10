@@ -10,7 +10,7 @@ then
 		echo "               change (branch名)  //branchに移動する"
 		echo "               all_push  //すべてをcommit・pushする"
 		echo "               all_merge  //すべてをfetch・mergeする"
-		echo "               all_checkout (file名)  //すべてのbranchにfileを転送しcommit・pushする"
+		echo "               all_checkout (file名)  //他のbranchにfileを転送しcommit・pushする"
 		return 0
 	fi
 fi
