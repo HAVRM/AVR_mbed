@@ -7,6 +7,7 @@ then
 	then
 		echo "AVR_mbedのgithub調整用"
 		echo ". git_cont.sh (オプション)"
+		echo "               now //現在のbranchを表示する"
 		echo "               change (branch名)  //branchに移動する"
 		echo "               all_push  //すべてをcommit・pushする"
 		echo "               all_merge  //すべてをfetch・mergeする"
@@ -14,7 +15,7 @@ then
 		return 0
 	fi
 fi
-. ~/rm_~_file.sh
+. ~/rm_~_file.sh 1>/dev/null 2>&1
 cd ~/AVR_mbed
 DATE=`date '+%m%d_%H%M_%S'`
 DATA=(`git branch --list`)
@@ -130,6 +131,9 @@ then
 			fi
 		done
 		git checkout $BCH
+	elif [ $1 = "now" ]
+	then
+		echo $BCH
 	fi
 fi
 cd $PLACEgit_cont
