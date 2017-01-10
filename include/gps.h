@@ -110,8 +110,7 @@ int get_gps(int time[3],int date[3],int *sats,float *east,float *north,float *hi
   char gga[100], vtg[100], zda[100], gll;
   int n=0,k=0; //n is numbers of message, k is numbers in messege
   int get_id=0;
-  int ch=0;
-  while(ch!=0b1111){
+  while(1){
     c=USART_getc();
     while(c!='$')c=USART_getc();
     if((c=USART_getc())=='G')if((c=USART_getc())=='P'){
@@ -123,7 +122,6 @@ int get_gps(int time[3],int date[3],int *sats,float *east,float *north,float *hi
               gga[i]=c;
               c=USART_getc();
             }
-            ch|=1;
           }
         }
         else if(c=='L')if((c=USART_getc())=='L')if((c=USART_getc())==','){
@@ -132,7 +130,6 @@ int get_gps(int time[3],int date[3],int *sats,float *east,float *north,float *hi
             gll=c;
             c=USART_getc();
           }
-          ch|=2;
         }
       }
       else if(c=='V'){
@@ -142,7 +139,6 @@ int get_gps(int time[3],int date[3],int *sats,float *east,float *north,float *hi
             vtg[i]=c;
             c=USART_getc();
           }
-          ch|=4;
         }
       }
       else if(c=='Z')if((c=USART_getc())=='D')if((c=USART_getc())=='A')if((c=USART_getc())==','){
@@ -151,7 +147,7 @@ int get_gps(int time[3],int date[3],int *sats,float *east,float *north,float *hi
           zda[i]=c;
           c=USART_getc();
         }
-        ch|=8;
+        break;
       }
     }
   }
