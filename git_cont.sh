@@ -55,6 +55,7 @@ then
 	then
 		git add -A
 		git commit -m $DATE
+		git push AVR_mbed $BCH
 		DATA=(`git branch --list`)
 		FIL=(`ls`)
 		for arg in ${DATA[@]}
