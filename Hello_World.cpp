@@ -1,9 +1,13 @@
 #include "mbed.h"
 
-BusOut col(PC_0,PC_1,PC_2,PC_3,PC_4);
-BusOut row(PD_2,PD_3,PD_4,PD_5,PD_6,PD_7,PB_7);
-BusIn sw(PB_0,PB_1);
-DigitalOut dip(PB_6);
+//BusOut col(PC_0,PC_1,PC_2,PC_3,PC_4);
+int col;
+//BusOut row(PD_2,PD_3,PD_4,PD_5,PD_6,PD_7,PB_7);
+int row;
+//BusIn sw(PB_0,PB_1);
+BusIn sw(PD_5,PD_6,PD_7,PB_0);
+//DigitalOut dip(PB_6);
+int dip;
 DigitalOut sdcs(PB_2);
 Serial gps;
 
@@ -20,7 +24,7 @@ int main(void){
   char buf[16] = "0123456789\r\n";
   int re;
   USART_Init(9600);
-  if(sw&1)return 0;
+//  if(sw&1)return 0;
   dip=0;
   col=0;
   row=~1;
@@ -34,21 +38,22 @@ int main(void){
     col=3;
     l=0;
     while(l<1800){
+      if(sw==0b0000)break;
       dip=!dip;
       col=0;
       gll=get_gps(time,date,&sats,&east,&north,&high,&speed,&dire);
-      if(sw==0b10)col=5;
-      else col=0;
+      //if(sw==0b10)col=5;
+      //else col=0;
       if((re=write_sd(fd,gll,time,date,sats,east,north,high,speed,dire))<0)while(1)row=re;
       l++;
-      if(sw&1)break;
-      if(sw==0b10)show_map(east,north);
-      else col=0;
-      if(sw==0b10)col=3;
+      //if(sw&1)break;
+      //if(sw==0b10)show_map(east,north);
+      //else col=0;
+      //if(sw==0b10)col=3;
     }
     col=6;
     if((re=close_sd(fd))<0)while(1)row=re;
-    if(sw&1)break;
+    //if(sw&1)break;
   }
   col=7;
   

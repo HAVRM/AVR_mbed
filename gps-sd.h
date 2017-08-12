@@ -2,13 +2,13 @@
 
 #ifndef GPS_SD_H_20161224_
 #define GPS_SD_H_20161224_
-#include "jmap.h"
+//#include "jmap.h"
 #include "sd.h"
 #include "gps.h"
 #include "serial.h"
 #include "mbed.h"
 
-int place_col_5bit(double east,double north,int row){
+/*int place_col_5bit(double east,double north,int row){
   double diffe=(east-122.933)/0.527;
   double diffn=(45.538-north)/0.439;
   int e=(int)diffe-2;
@@ -20,7 +20,7 @@ int place_col_5bit(double east,double north,int row){
     else ans=ans|(JMP(n,e+i)<<(4-i));
   }
   return ans;
-}
+}*/
 
 char uint_2_char60(int data){
   data%=60;
@@ -97,7 +97,7 @@ int write_sd(int fd,int gll,int time[3],int date[3],int sats,float east,float no
   return sd_write(fd, buf, 28);
 }
 
-void show_map(float east,float north){
+/*void show_map(float east,float north){
   for(int i=0;i<10;i++){
     for(int j=0;j<7;j++){
       int k=place_col_5bit(east,north,j);
@@ -107,7 +107,7 @@ void show_map(float east,float north){
       wait_ms(1);
     }
   }
-}
+}*/
 
 int close_sd(int fd){
   if (sd_close(fd) < 0)return -1;
