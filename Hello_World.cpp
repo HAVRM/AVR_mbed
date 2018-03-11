@@ -10,6 +10,7 @@ BusIn sw(PD_5,PD_6,PD_7,PB_0);
 int dip;
 DigitalOut sdcs(PB_2);
 Serial gps;
+BusOut led(PD_2,PD_3,PD_4);
 
 #include "gps-sd.h"
 
@@ -30,31 +31,54 @@ int main(void){
   row=~1;
   col=1;
   sdcs=1;
+  led=1;
   char c;
   get_now(date,time);
+  led=2;
   col=2;
   for(int j=0;j<1000;j++){
     if((fd=open_sd(date,time,j))<0)while(1)row=fd;
+    led=7;
     col=3;
     l=0;
     while(l<1800){
-      if(sw==0b0000)break;
+      //if(sw==0b0000)break;
       dip=!dip;
       col=0;
+      led=0;
+      led=3;
       gll=get_gps(time,date,&sats,&east,&north,&high,&speed,&dire);
       //if(sw==0b10)col=5;
       //else col=0;
+      led=0;
+      led=5;
       if((re=write_sd(fd,gll,time,date,sats,east,north,high,speed,dire))<0)while(1)row=re;
       l++;
+      led=0;
+      led=6;
       //if(sw&1)break;
       //if(sw==0b10)show_map(east,north);
       //else col=0;
       //if(sw==0b10)col=3;
     }
     col=6;
+    led=4;
     if((re=close_sd(fd))<0)while(1)row=re;
     //if(sw&1)break;
   }
+/*  while(1){
+    led=3;
+    wait_ms(1000);
+    led=5;
+    wait_ms(1000);
+    led=6;
+    wait_ms(1000);
+    led=7;
+    wait_ms(1000);
+    led=0;
+    wait_ms(1000);
+  }*/
+  led=7;
   col=7;
   
   sdcs=0;
