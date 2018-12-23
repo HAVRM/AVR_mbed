@@ -1,4 +1,4 @@
-//Author: hiroki.mine
+//Author: HAVRM
 
 #ifndef SPISLAVE_H_20150625_
 #define SPISLAVE_H_20150625_
