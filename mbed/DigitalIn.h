@@ -1,4 +1,4 @@
-//  Author: hiroki.mine
+//  Author: HAVRM
 
 #ifndef DIGITALIN_H_20150401_
 #define DIGITALIN_H_20150401_
