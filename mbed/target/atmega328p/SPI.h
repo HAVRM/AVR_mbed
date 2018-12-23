@@ -1,4 +1,4 @@
-//  Author: hiroki.mine
+//  Author: HAVRM
 
 #ifndef SPI_H_20150402_
 #define SPI_H_20150402_
