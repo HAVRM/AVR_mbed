@@ -1,4 +1,4 @@
-//  Author: hiroki.mine
+//  Author: HAVRM
 
 #ifndef BUSOUT_H_20150404_
 #define BUSOUT_H_20150404_
