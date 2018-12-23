@@ -1,4 +1,4 @@
-//  Author: hiroki.mine 
+//  Author: HAVRM 
 
 
 #ifndef PINNAME_H_20150401_
