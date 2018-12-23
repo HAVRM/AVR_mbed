@@ -2,7 +2,7 @@
  * DigitalInOut.h
  *
  * Created: 2015/04/01 17:01:33
- *  Author: hiroki.mine
+ *  Author: HAVRM
  */ 
 
 
