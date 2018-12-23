@@ -1,4 +1,4 @@
-// Author: hiroki.mine
+// Author: HAVRM
 
 #ifndef MBED_WAIT_H_20161130_1831_
 #define MBED_WAIT_H_20161130_1831_
