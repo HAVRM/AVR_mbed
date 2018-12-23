@@ -1,4 +1,4 @@
-//  Author: hiroki.mine
+//  Author: HAVRM
 
 #ifndef BUSIN_H_20150404_
 #define BUSIN_H_20150404_
