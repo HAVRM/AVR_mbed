@@ -1,4 +1,4 @@
-// Author: hiroki.mine
+// Author: HAVRM
 // This is not for Atmega88
 
 
