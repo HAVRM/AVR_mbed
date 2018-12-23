@@ -1,4 +1,4 @@
-//  Author: hiroki.mine
+//  Author: HAVRM
 
 
 #ifndef DIGITALOUT_H_20150401_
